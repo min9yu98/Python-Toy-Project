@@ -30,3 +30,5 @@ while True:
 	ppom(url_ppom)
 	
 	time.sleep(1800) #30분 간격으로 update
+
+# 현재 GUI 제작 중
