@@ -19,7 +19,7 @@ import pyautogui
 # driver = webdriver.Chrome('크롬 드라이버 설치 경로', options=chrome_options) # 입력
 
 
-driver = webdriver.Chrome('C:/Users/user/Desktop/가마우지/chromedriver_win32/chromedriver.exe') # 입력
+driver = webdriver.Chrome('C:/Users/user/Desktop/chromedriver_win32/chromedriver.exe') # 입력
 driver.implicitly_wait(30)
 url = 'https://www.chosun.com/subscribe/signin/'
 driver.get(url)
