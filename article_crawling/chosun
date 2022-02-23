@@ -104,7 +104,7 @@ def url_in_page(url):
 
 # 각 url을 이용해 위 함수를 이용하여 기사들을 긁어오고 파일에 저장 - (무시 encoding='utf-8')
 def write_article(arti):
-    with open('저장할 경로', 'a', encoding='utf-8') as file: # 입력
+    with open('C:/Users/user/Desktop/', 'a', encoding='utf-8') as file: # 입력
         file.write(arti + "\n")
 
 
@@ -164,7 +164,7 @@ for i in range(1, page_limit + 1):
     time.sleep(2)
     urls_list = url_in_page(main_url)[0]
     for url in urls_list:
-        # write_article(article(url, idx))
+        write_article(article(url, idx))
         time.sleep(3)
         print(article(url, idx))
         idx += 1
