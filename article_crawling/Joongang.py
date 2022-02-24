@@ -160,7 +160,7 @@ arti_idx = 0
 while True:
     time.sleep(3)
     for url in url_list_:
-        time.sleep(random.randrange(3, 15))
+        time.sleep(random.randrange(1, 5))
         title_, contents_ = article(url)
         total_arti = ""
         total_arti += "[" + str(arti_idx) + "]" + title_ + "   " + contents_
