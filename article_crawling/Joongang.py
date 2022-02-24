@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 import random
 import math
 import requests
-
+import pyautogui
 
 
 chrome_options = webdriver.ChromeOptions()
@@ -20,7 +20,7 @@ chrome_options.add_argument(
 
 
 
-driver = webdriver.Chrome('크롬 드라이버 설치 경로') # 입력
+driver = webdriver.Chrome('C:/Users/user/Desktop/chromedriver_win32/chromedriver.exe') # 입력
 driver.implicitly_wait(30)
 url = 'https://account.joongang.co.kr/login?targetURL=https%3A%2F%2Fwww.joongang.co.kr%2F'
 driver.get(url)
@@ -29,15 +29,15 @@ driver.implicitly_wait(30)
 
 # 로그인 하기
 driver.find_element(By.NAME, 'txtEmail').click()
-driver.find_element(By.NAME, 'txtEmail').send_keys('중앙일보 id') # 입력
-driver.find_element(By.NAME, 'txtPasswd').send_keys('중앙일보 passwd') # 입력
+driver.find_element(By.NAME, 'txtEmail').send_keys('중앙일보id') # 입력
+driver.find_element(By.NAME, 'txtPasswd').send_keys('중앙일보pwd*') # 입력
 driver.find_element(By.XPATH, '//*[@id="emailForm"]/div[4]/button').click()
 driver.implicitly_wait(10)
 
 
 driver.find_element(By.XPATH, '//*[@id="header"]/div[1]/div/nav/button[2]').click()
 driver.find_element(By.CLASS_NAME, 'search_form').click()
-driver.find_element(By.XPATH, '//*[@id="layer_search"]/div/div[2]/form/div/div/p').send_keys('키워드') # 입력
+driver.find_element(By.XPATH, '//*[@id="layer_search"]/div/div[2]/form/div/div/p').send_keys('코로나') # 입력 keyword
 driver.find_element(By.XPATH, '//*[@id="layer_search"]/div/div[2]/form/div/button').click()
 time.sleep(2)
 driver.implicitly_wait(30)
@@ -49,9 +49,10 @@ req = driver.page_source
 bs = BeautifulSoup(req, 'lxml')
 html = str(bs.find('div', 'ui-datepicker-title').get_text())
 html = html.split()
-year, month = int(html[0][:-1]), int(html[1][:-1])
-cnt_start = (year - 2020) * 12 + (month - 1)
-cnt_end = (year - 2021 - 1) * 12 + month
+year, month = int(html[0][:-1]), int(html[1][:-1]) 
+# 긁을 날마다 설정
+cnt_start = (year - 2020) * 12 + (month - 1) 
+cnt_end = (year - 2020) * 12 + (month - 1)
 
 
 # 직접 기간 입력
@@ -61,6 +62,7 @@ driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[4]/ul/li[2]/label/span
 # 직접 설정
 driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[1]/ul/li[5]/span[1]/label').click()
 
+# 번거롭지만 직접 xpath이용해서 
 # 시작 년/월/일
 driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[1]/ul/li[5]/span[2]').click() # 시작
 time.sleep(2)
@@ -100,20 +102,17 @@ total_page_click_cnt = math.ceil(total_arti_cnt / 24) # 총 클릭할 페이지 
 
 
 # 더보기를 끝까지 눌러서 모든 기사 불러오기
-for i in range(total_page_click_cnt):
+for i in range(total_page_click_cnt - 1):
     if int(total_page_click_cnt / 100) == i:
         time.sleep(random.randrange(5, 10))
-    driver.find_element(By.XPATH, '//*[@id="container"]/section/div/section/div/a').click()
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    click2height = last_height - 2000
+    driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
+    time.sleep(2)
+    driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
+    pyautogui.click(476, 710)
     driver.implicitly_wait(30)
-    time.sleep(random.randrange(3, 6) / 10)
-
-# 테스트
-# for i in range(2):
-#     if int(total_page_click_cnt / 100) == i:
-#         time.sleep(random.randrange(5, 10))
-#     driver.find_element(By.XPATH, '//*[@id="container"]/section/div/section/div/a').click()
-#     driver.implicitly_wait(30)
-#     time.sleep(random.randrange(1, 5))
+    time.sleep(10)
 
 
 
@@ -137,7 +136,7 @@ def article(url):
 
 # 각 url을 이용해 위 함수를 이용하여 기사들을 긁어오고 파일에 저장 - (무시 encoding='utf-8')
 def write_article(arti):
-    with open('저장할 경로', 'a', encoding='utf-8') as file: # 입력
+    with open('C:/Users/user/Desktop/', 'a', encoding='utf-8') as file: # 입력
         file.write(arti + "\n")
 
 
@@ -154,7 +153,7 @@ for e in url_html:
 url_list_ = url_list_[5:-5]
 
 arti_idx = 0
-print(url_list_)
+
 
 # 동적 크롤링을 이용해서 긁어온 url들을 이용하여 정적으로 크롤링을 한다.
 # 실행
