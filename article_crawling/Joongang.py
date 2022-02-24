@@ -70,6 +70,7 @@ for _ in range(cnt_start):
     time.sleep(0.7)
     driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/div/a[1]').click()
 driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/table/tbody/tr[1]/td[4]/a').click()
+
 # 끝 년/월/일
 driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[1]/ul/li[5]/span[3]/img').click()
 time.sleep(2)
@@ -77,6 +78,9 @@ for _ in range(cnt_end):
     time.sleep(0.7)
     driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/div/a[1]').click()
 driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/table/tbody/tr[5]/td[6]/a').click()
+
+time.sleep(2)
+
 # 확인
 driver.find_element(By.XPATH, '//*[@id="search_detail"]').click()
 # 기사 전체보기
