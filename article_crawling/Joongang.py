@@ -3,11 +3,11 @@ import re
 from selenium import webdriver
 import time
 from bs4 import BeautifulSoup
+from selenium.common.exceptions import ElementNotInteractableException
 from selenium.webdriver.common.by import By
 import random
 import math
 import requests
-import pyautogui
 
 
 chrome_options = webdriver.ChromeOptions()
@@ -114,14 +114,20 @@ for i in range(total_page_click_cnt):
         soup = BeautifulSoup(req, 'lxml')
         time.sleep(10)
         url_html = str(soup.findAll('h2', 'headline')).split('">')
-        last_height = driver.execute_script("return document.body.scrollHeight")
-        click2height = last_height - 2000
-        driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
-        time.sleep(2)
-        driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
-        pyautogui.click(476, 710)
-        driver.implicitly_wait(30)
-        time.sleep(10)
+        try:
+            last_height = driver.execute_script("return document.body.scrollHeight")
+            click2height = last_height - 2000
+            driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
+            time.sleep(2)
+            driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
+            pyautogui.click(476, 710)
+            driver.implicitly_wait(30)
+            time.sleep(10)
+        except ElementNotInteractableException:
+            req = driver.page_source
+            soup = BeautifulSoup(req, 'lxml')
+            time.sleep(10)
+            url_html = str(soup.findAll('h2', 'headline')).split('">')
     except AttributeError:
             break   
     
