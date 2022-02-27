@@ -106,19 +106,27 @@ total_page_click_cnt = math.ceil(total_arti_cnt / 24) # 총 클릭할 페이지 
 
 
 # 더보기를 끝까지 눌러서 모든 기사 불러오기
-for i in range(total_page_click_cnt - 1):
+for i in range(total_page_click_cnt):
     if int(total_page_click_cnt / 100) == i:
         time.sleep(random.randrange(5, 10))
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    click2height = last_height - 2000
-    driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
-    time.sleep(2)
-    driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
-    pyautogui.click(476, 710)
-    driver.implicitly_wait(30)
-    time.sleep(10)
-
-
+    try:
+        req = driver.page_source
+        soup = BeautifulSoup(req, 'lxml')
+        time.sleep(10)
+        url_html = str(soup.findAll('h2', 'headline')).split('">')
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        click2height = last_height - 2000
+        driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
+        time.sleep(2)
+        driver.execute_script("window.scrollTo(0, " + str(click2height) + ");")
+        pyautogui.click(476, 710)
+        driver.implicitly_wait(30)
+        time.sleep(10)
+    except AttributeError:
+            break   
+    
+    
+    
 
 # 기사 긁어오기
 def article(url):
@@ -146,10 +154,6 @@ def write_article(arti):
 
 
 # 동적으로 페이지를 불러온 뒤 url들을 가져온다 -> 더보기로 기사를 늘렸을 때 url을 가져올 수 있게 된다.
-req = driver.page_source
-soup = BeautifulSoup(req, 'lxml')
-time.sleep(10)
-url_html = str(soup.findAll('h2', 'headline')).split('">')
 url_list_ = []
 for e in url_html:
     if 'href=' in e:
