@@ -22,12 +22,12 @@ time.sleep(2)
 
 driver.find_element(By.XPATH, '//*[@id="dt_cal"]').click()
 driver.find_element(By.XPATH, '//*[@id="date-select-from"]').clear()
-driver.find_element(By.XPATH, '//*[@id="date-select-from"]').send_keys('2020.01.01')
+driver.find_element(By.XPATH, '//*[@id="date-select-from"]').send_keys('2020.01.01') # 시작
 
 pyautogui.press('tab')
 
 driver.find_element(By.XPATH, '//*[@id="date-select-to"]').clear()
-driver.find_element(By.XPATH, '//*[@id="date-select-to"]').send_keys('2020.01.31')
+driver.find_element(By.XPATH, '//*[@id="date-select-to"]').send_keys('2020.01.31') # 
 
 pyautogui.click(291, 642)
 
@@ -59,6 +59,12 @@ def article(url, idx):
 
 
 
+def write_article(arti):
+    with open('C:/Users/user/Desktop/', 'a', encoding='utf-8') as file: # 입력
+        file.write(arti + "\n")
+
+
+
 def process(url, raw_contents):
     req = requests.get(url)
     html = req.text
@@ -75,7 +81,6 @@ def next_page():
     for _ in range(2):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(random.randrange(1, 5))
-
     driver.find_element(By.XPATH, '//*[@id="content"]/div/div[1]/div[5]/a[2]').click()
     for _ in range(2):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -97,6 +102,7 @@ for i in range(total_click_cnt):
     urls_list = urls_in_page(driver.current_url)
     for url in urls_list:
         try:
+            write_article(article(url, idx))
             print(article(url, idx))
         except requests.exceptions.InvalidSchema:
             continue
