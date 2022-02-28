@@ -6,31 +6,30 @@ from selenium.webdriver.common.by import By
 import random
 import pyautogui
 import requests
+import selenium
+from selenium.common.exceptions import ElementClickInterceptedException
 
 
 driver = webdriver.Chrome('C:/Users/user/Desktop/chromedriver_win32/chromedriver.exe') # 입력
 driver.implicitly_wait(30)
 url = 'https://news.kbs.co.kr/search/search.do?query=%EC%BD%94%EB%A1%9C%EB%82%98#1'
-# url = 'https://news.kbs.co.kr/news/view.do?ncd=5401996'
 driver.get(url)
 driver.implicitly_wait(30)
 
 # 기간 설정
 driver.find_element(By.XPATH, '//*[@id="btn-search-opt"]').click()
-time.sleep(5)
+time.sleep(2)
 
-#시작년
-pyautogui.click(110, 631)
-pyautogui.click(110, 631)
+driver.find_element(By.XPATH, '//*[@id="dt_cal"]').click()
 driver.find_element(By.XPATH, '//*[@id="date-select-from"]').clear()
 driver.find_element(By.XPATH, '//*[@id="date-select-from"]').send_keys('2020.01.01')
-time.sleep(5)
-# 끝년
-pyautogui.click(178, 640)
-pyautogui.click(178, 640)
+
+pyautogui.press('tab')
+
 driver.find_element(By.XPATH, '//*[@id="date-select-to"]').clear()
 driver.find_element(By.XPATH, '//*[@id="date-select-to"]').send_keys('2020.01.31')
-pyautogui.click(292, 638)
+
+pyautogui.click(291, 642)
 
 
 
@@ -70,7 +69,38 @@ def process(url, raw_contents):
     contents = raw_contents.replace('\t', "")
     return contents
 
-urls_list = urls_in_page(driver.current_url)
-print(urls_list)
-for url in urls_list:
-    print(article(url, 1))
+
+
+def next_page():
+    for _ in range(2):
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(random.randrange(1, 5))
+
+    driver.find_element(By.XPATH, '//*[@id="content"]/div/div[1]/div[5]/a[2]').click()
+    for _ in range(2):
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(random.randrange(1, 5))
+
+
+
+paging_html = driver.page_source
+paging_bs = BeautifulSoup(paging_html, 'lxml')
+raw_total = str(paging_bs.find('em', {'class', 'num'}).get_text())
+total = int(raw_total.replace(",", ""))
+total_click_cnt = total // 10
+if total % 10 != 0:
+    total_click_cnt += 1
+
+idx = 0
+
+for i in range(total_click_cnt):
+    urls_list = urls_in_page(driver.current_url)
+    for url in urls_list:
+        try:
+            print(article(url, idx))
+        except requests.exceptions.InvalidSchema:
+            continue
+        idx += 1
+        time.sleep(1)
+    next_page()
+    time.sleep(random.randrange(3, 7))
