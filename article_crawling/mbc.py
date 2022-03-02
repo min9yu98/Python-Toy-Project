@@ -53,18 +53,18 @@ def urls_in_page():
 
 
 
-def article(url):
-    start = requests.get(url)
-    html = start.text
-    source = BeautifulSoup(html, 'html.parser')
-    raw_contents = source.find_all('div', {'class', 'news_txt'})
+def article(url, idx):
+    driver.get(url)
+    html = driver.page_source
+    source = BeautifulSoup(html, 'lxml')
+    raw_contents = source.find('div', {'class', 'news_txt'}).get_text().replace("   ", "")
+    raw_contents = raw_contents.strip().split('\n')
     contents = ""
     for e in raw_contents:
-        contents += e.get_text()
-    contents = contents.replace("     ", "")
-    contents = contents.lstrip()
+        if e != '':
+            contents += e
     title = source.find('h2', {'class', 'art_title'}).get_text()
-    arti = title + "    " + contents # arti 앞에 [index] 넣어줘야함
+    arti = "[" + str(idx) + "]" + title + "    " + contents  # arti 앞에 [index] 넣어줘야함
     return arti
 
 
@@ -79,29 +79,51 @@ def total_arti():
 
 
 def write_article(arti):
-    with open('C:/Users/user/Desktop/', 'a', encoding='utf-8') as file: # 입력
+    with open('C:/Users/user/Desktop/2020_1_mbc.txt', 'a', encoding='utf-8') as file: # 입력
         file.write(arti + "\n")
 
 
 
 def next_page():
-    for _ in range(3):
+    for _ in range(2):
         time.sleep(1.5)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    pyautogui.click(536, 776)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    pyautogui.click(580, 776)
+    time.sleep(1)
 
 
 
-# total = total_arti()
-# page = total // 5
-# if total % 5 != 0:
-#     page += 1
-#
-# idx = 0
+total = total_arti()
+page = total // 5
+if total % 5 != 0:
+    page += 1
 
-# for i in range(page):
-#     urls = urls_in_page()
-#     for  url in urls:
-#         # write_article(article(url))
-#         print(article(url))
-#     next_page()
+idx = 0
+first_page = 1
+# 맨처음 클릭 좌표 (535, 778)
+
+url_rep = []
+
+
+
+for _ in range(page):
+    urls = urls_in_page()
+    url_rep += urls
+    if first_page == 1:
+        first_page += 1
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        driver.implicitly_wait(30)
+        time.sleep(3)
+        driver.implicitly_wait(30)
+        pyautogui.click(535, 778)
+    else:
+        next_page()
+    time.sleep(1)
+
+for i in range(len(url_rep)):
+    driver.implicitly_wait(30)
+    time.sleep(0.7)
+    driver.implicitly_wait(30)
+    write_article(article(url_rep[i], i))
+    print(article(url_rep[i], i))
