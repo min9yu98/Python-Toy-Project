@@ -78,15 +78,14 @@ def process(url, raw_contents):
 
 
 def next_page():
-    for _ in range(2):
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(random.randrange(1, 5))
+    time.sleep(random.randrange(1, 5))
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     driver.find_element(By.XPATH, '//*[@id="content"]/div/div[1]/div[5]/a[2]').click()
-    for _ in range(2):
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(random.randrange(1, 5))
+    time.sleep(random.randrange(1, 5))
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 
+time.sleep(3)
 
 paging_html = driver.page_source
 paging_bs = BeautifulSoup(paging_html, 'lxml')
@@ -105,6 +104,8 @@ for i in range(total_click_cnt):
             write_article(article(url, idx))
             print(article(url, idx))
         except requests.exceptions.InvalidSchema:
+            continue
+        except AttributeError:
             continue
         idx += 1
         time.sleep(1)
