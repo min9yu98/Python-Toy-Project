@@ -120,7 +120,7 @@ for _ in range(page):
     else:
         next_page()
     time.sleep(1)
-
+print(len(url_rep))
 for i in range(len(url_rep)):
     driver.implicitly_wait(30)
     time.sleep(0.7)
