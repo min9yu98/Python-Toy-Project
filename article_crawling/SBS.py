@@ -29,7 +29,7 @@ time.sleep(random.randrange(1, 3))
 driver.find_element(By.XPATH, '//*[@id="searchEndDate"]').click()
 driver.find_element(By.XPATH, '//*[@id="calendar2selectYear"]/option[3]').click()  # 년 2021 3->2
 driver.find_element(By.XPATH, '//*[@id="calendar2selectMonth"]/option[1]').click()  # 월
-driver.find_element(By.XPATH, '//*[@id="schedule2"]/div/table/tbody/tr[5]/td[6]').click()  # 일
+driver.find_element(By.XPATH, '//*[@id="schedule2"]/div/table/tbody/tr[5]/td[6]/button').click()  # 일
 
 driver.find_element(By.XPATH, '//*[@id="container"]/div[3]/div/ul/li[2]/a').click()
 
