@@ -33,6 +33,8 @@ driver.find_element(By.XPATH, '//*[@id="schedule2"]/div/table/tbody/tr[5]/td[6]'
 
 driver.find_element(By.XPATH, '//*[@id="container"]/div[3]/div/ul/li[2]/a').click()
 
+driver.find_element(By.XPATH, '//*[@id="searchBt"]').click()
+
 source_total = driver.page_source
 html_total = BeautifulSoup(source_total, 'lxml')
 raw_total = str(html_total.find('strong', {'class', 'psr_num'}).get_text()).split('/')
