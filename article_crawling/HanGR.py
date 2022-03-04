@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 import requests
 
 
-driver = webdriver.Chrome(executable_path='C:/Users/kmkkm/Desktop/ChromeDriver/chromedriver_win32/chromedriver.exe')
+driver = webdriver.Chrome(executable_path='C:/Users/user/Desktop/chromedriver_win32/chromedriver.exe')
 url = 'https://www.hani.co.kr/'
 driver.get(url)
 time.sleep(3)
