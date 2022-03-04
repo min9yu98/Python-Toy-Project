@@ -12,13 +12,13 @@ import requests
 driver = webdriver.Chrome(executable_path='C:/Users/user/Desktop/chromedriver_win32/chromedriver.exe')
 url = 'https://www.hani.co.kr/'
 driver.get(url)
-time.sleep(3)
+time.sleep(1.5)
 
 # 검색
-time.sleep(3)
+time.sleep(1.5)
 driver.execute_script("window.scrollTo(document.body.scrollHeight, 0);")
-time.sleep(3)
-pyautogui.click(518, 151)
+time.sleep(1.5)
+pyautogui.click(550, 151)
 driver.find_element(By.XPATH, '//*[@id="search_form"]/div/form/input[3]').send_keys('코로나')
 driver.find_element(By.XPATH, '//*[@id="search_form"]/div/form/input[4]').click()
 
@@ -29,14 +29,14 @@ driver.find_element(By.XPATH, '//*[@id="contents"]/div[1]/ul/li[2]/span/a').clic
 driver.find_element(By.XPATH, '//*[@id="datefrom"]').click()
 driver.find_element(By.XPATH, '//*[@id="datefrom"]').clear()
 driver.find_element(By.XPATH, '//*[@id="datefrom"]').send_keys('20200101') # 시작 년월일
-time.sleep(2)
+time.sleep(1.5)
 
 driver.find_element(By.XPATH, '//*[@id="dateto"]').click()
 driver.find_element(By.XPATH, '//*[@id="dateto"]').clear()
 driver.find_element(By.XPATH, '//*[@id="dateto"]').send_keys('20200131') # 끝 년월일
 driver.find_element(By.XPATH, '//*[@id="contents"]/div[1]/div/ul/li[5]/form/div/button').click()
 
-time.sleep(3)
+time.sleep(1.5)
 req_total = driver.page_source
 bs_total = BeautifulSoup(req_total, 'lxml')
 html_total = bs_total.find('span', {'class', 'total'}).get_text().split(' ')[0]
@@ -116,6 +116,8 @@ total_page = int(total_arti / 10)
 if total_page % 10 != 0:
     total_page += 1
 
+
+
 idx = 0
 
 for i in range(1, total_page + 1):
@@ -127,12 +129,15 @@ for i in range(1, total_page + 1):
     else:
         next_page(page)
     urls_list = urls_in_page()
-    time.sleep(3)
+    time.sleep(1.7)
     driver.implicitly_wait(30)
     for url in urls_list:
-        write_article(article(url, idx))
-        print(article(url, idx))
-        time.sleep(2)
+        try:
+            # write_article(article(url, idx))
+            print(article(url, idx))
+        except AttributeError:
+            continue
+        time.sleep(1.7)
         idx += 1
     if i % 10 == 0:
         if i == 10:
