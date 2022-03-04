@@ -69,7 +69,7 @@ def next_page(page):
 
 # 파일 저장
 def write_article(arti):
-    with open('C:/Users/kmkkm/Desktop/2020_1_han.txt', 'a', encoding='utf-8') as file: # 입력
+    with open('C:/Users/user/Desktop/2020_1_han.txt', 'a', encoding='utf-8') as file: # 입력
         file.write(arti + "\n")
 
 
