@@ -98,6 +98,8 @@ idx = 0
 for i in range(1, page_total + 1):
     if i == 10:
         next_page(10)
+    elif str(i)[-1] == '1':
+        pass
     elif i != 10 and i != 1:
         next = str(len(str(i))) + str(i)[-1]
         next_page(int(next))
