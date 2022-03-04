@@ -47,9 +47,6 @@ total_arti = int(html_total)
 # 페이지 넘어가는 코드, 컴퓨터마다 다를 수 있습니다.
 def next_page(page):
     want = driver.find_element_by_xpath('//*[@id="contents"]/div[4]').location['y'] - 760
-    for _ in range(3):
-        driver.execute_script("window.scrollTo(0," + str(want) + ");")
-        time.sleep(2)
     mouse_dict = {11: (255, 938), 12: (284, 938), 13: (311, 938),
                   14: (342, 938), 15: (369, 938), 16: (399, 938),
                   17: (428, 938), 18: (456, 938), 19: (486, 938),
@@ -59,10 +56,10 @@ def next_page(page):
                   29: (522, 938), 20: (557, 938), 'next2': (639, 938),
                   31: (186, 938), 32: (237, 938), 33: (277, 938), 34: (320, 938),
                   35: (367, 938), 36: (415, 938), 37: (457, 938), 38: (503, 938),
-                  39: (543, 938), 30: (588, 938), 'next3': (640, 938),}
+                  39: (543, 938), 30: (588, 938), 'next3': (640, 938)}
     for _ in range(2):
+        time.sleep(1.5)
         driver.execute_script("window.scrollTo(0," + str(want) + ");")
-        time.sleep(2)
     pyautogui.click(mouse_dict[page][0], mouse_dict[page][1])
 
 
@@ -120,7 +117,7 @@ if total_page % 10 != 0:
 
 idx = 0
 
-for i in range(1, total_page + 1):
+for i in range(1, total_page + 2):
     page_first = len(str(i))
     page_second = i % 10
     page = page_first * 10 + page_second
@@ -129,16 +126,16 @@ for i in range(1, total_page + 1):
     else:
         next_page(page)
     urls_list = urls_in_page()
-    time.sleep(1.7)
+    time.sleep(1)
     driver.implicitly_wait(30)
     for url in urls_list:
         try:
-            # write_article(article(url, idx))
+            write_article(article(url, idx))
             print(article(url, idx))
         except AttributeError:
             continue
-        time.sleep(1.7)
         idx += 1
+    driver.implicitly_wait(30)
     if i % 10 == 0:
         if i == 10:
             next_page('next1')
