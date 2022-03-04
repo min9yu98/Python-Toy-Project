@@ -31,9 +31,9 @@ driver.find_element(By.XPATH, '//*[@id="calendar2selectYear"]/option[3]').click(
 driver.find_element(By.XPATH, '//*[@id="calendar2selectMonth"]/option[1]').click()  # 월
 driver.find_element(By.XPATH, '//*[@id="schedule2"]/div/table/tbody/tr[5]/td[6]/button').click()  # 일
 
-driver.find_element(By.XPATH, '//*[@id="container"]/div[3]/div/ul/li[2]/a').click()
-
 driver.find_element(By.XPATH, '//*[@id="searchBt"]').click()
+
+driver.find_element(By.XPATH, '//*[@id="container"]/div[3]/div/ul/li[2]/a').click()
 
 source_total = driver.page_source
 html_total = BeautifulSoup(source_total, 'lxml')
