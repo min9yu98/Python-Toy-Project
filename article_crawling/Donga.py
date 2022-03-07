@@ -1,5 +1,7 @@
 #입력 필요 : 크롬 드라이버 설치 경로, 조선일보 ID, PassWord, 키워드, 기사를 저장할 공간의 경로
 import re
+
+import pyautogui
 from selenium import webdriver
 import time
 from bs4 import BeautifulSoup
@@ -19,162 +21,113 @@ chrome_options.add_argument(
 # driver = webdriver.Chrome('C:/Users/brain/Desktop/crawling/code/chromedriver.exe', options=chrome_options) # 입력
 
 
-
-driver = webdriver.Chrome('C:/Users/kmkkm/Desktop/ChromeDriver/chromedriver_win32/chromedriver.exe') # 입력
+driver = webdriver.Chrome('C:/Users/user/Desktop/chromedriver_win32/chromedriver.exe') # 입력
 driver.implicitly_wait(30)
-url = 'https://www.google.com/search?q=%EC%BD%94%EB%A1%9C%EB%82%98&tbs=cdr:1,cd_min:2/1/2022,cd_max:2/16/2022&tbm=nws&ei=dTcPYv6kIczy-QbB8aeoBg&start=10&sa=N&ved=2ahUKEwi-s_X_yoj2AhVMed4KHcH4CWUQ8tMDegQIARA3&biw=1536&bih=722&dpr=1.25'
+url = 'https://www.donga.com/news/search?check_news=1&more=1&sorting=1&range=1&search_date=&v1=&v2=&query=%EC%BD%94%EB%A1%9C%EB%82%98'
 driver.get(url)
 driver.implicitly_wait(30)
 
+driver.find_element(By.XPATH, '//*[@id="container"]/div[1]/ul/li[6]/a').click()
+driver.find_element(By.XPATH, '//*[@id="search_form_detail"]/div[1]/label[5]').click()
+time.sleep(0.7)
+driver.find_element(By.XPATH, '//*[@id="v1"]').click()
+driver.find_element(By.XPATH, '//*[@id="v1"]').send_keys('20200101')
+driver.find_element(By.XPATH, '//*[@id="v2"]').click()
+driver.find_element(By.XPATH, '//*[@id="v2"]').send_keys('20200131')
+time.sleep(0.7)
+driver.find_element(By.XPATH, '//*[@id="search_form_detail"]/div[2]/input[2]').click()
+time.sleep(0.7)
+driver.find_element(By.XPATH, '//*[@id="content"]/div[3]/div/h2/span[2]/img[3]').click()
 
-req = driver.page_source
-bs = BeautifulSoup(req, 'lxml')
-html = bs.findAll('div', {'id': 'res'})
-for e in html:
-    print(e.get_text())
+
+total_html = driver.page_source
+total_bs = BeautifulSoup(total_html, 'lxml')
+total = int(total_bs.find('h2').get_text().split(' ')[3])
+
+total //= 15
+if total % 15 != 0:
+    total += 1
+
+
+def article(url, idx):
+    req = requests.get(url)
+    html = req.text
+    bs = BeautifulSoup(html, 'html.parser')
+    title = bs.find('h1', {'class', 'title'}).get_text()
+
+    raw_contents = bs.find('div', {'class', 'article_txt'}).get_text().split('\n')
+    contents = []
+    for e in raw_contents:
+        if e == '좋아요 이미지좋아요':
+            break
+        if e == '\n' or e == '':
+            continue
+        contents.append(e)
+    arti_body = ''
+    for c in contents:
+        if '\r' in c:
+            c = c.replace('\r', '')
+        arti_body += c
+    arti = '[' + str(idx) + ']' + title + '     ' + arti_body
+    return arti
 
 
 
-# # 로그인 하기
-# driver.find_element(By.NAME, 'txtEmail').click()
-# driver.find_element(By.NAME, 'txtEmail').send_keys('중앙일보 id') # 입력
-# driver.find_element(By.NAME, 'txtPasswd').send_keys('중앙일보 passwd') # 입력
-# driver.find_element(By.XPATH, '//*[@id="emailForm"]/div[4]/button').click()
-# driver.implicitly_wait(10)
-#
-#
-# driver.find_element(By.XPATH, '//*[@id="header"]/div[1]/div/nav/button[2]').click()
-# driver.find_element(By.CLASS_NAME, 'search_form').click()
-# driver.find_element(By.XPATH, '//*[@id="layer_search"]/div/div[2]/form/div/div/p').send_keys('키워드') # 입력
-# driver.find_element(By.XPATH, '//*[@id="layer_search"]/div/div[2]/form/div/button').click()
-# time.sleep(2)
-# driver.implicitly_wait(30)
-#
-#
-# # 년, 월 구하기 - 직접 기간 입력할 때 필요
-# driver.get(driver.current_url)
-# req = driver.page_source
-# bs = BeautifulSoup(req, 'lxml')
-# html = str(bs.find('div', 'ui-datepicker-title').get_text())
-# html = html.split()
-# year, month = int(html[0][:-1]), int(html[1][:-1])
-# cnt_start = (year - 2020) * 12 + (month - 1)
-# cnt_end = (year - 2021 - 1) * 12 + month
-#
-#
-# # 직접 기간 입력
-# driver.find_element(By.XPATH, '//*[@id="sticky"]/form/div/button[2]').click()
-# # 매체 - 중앙일보
-# driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[4]/ul/li[2]/label/span').click()
-# # 직접 설정
-# driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[1]/ul/li[5]/span[1]/label').click()
-#
-# # 시작 년/월/일
-# driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[1]/ul/li[5]/span[2]').click() # 시작
-# time.sleep(2)
-# for _ in range(cnt_start):
-#     time.sleep(0.7)
-#     driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/div/a[1]').click()
-# driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/table/tbody/tr[1]/td[4]/a').click()
-# # 끝 년/월/일
-# driver.find_element(By.XPATH, '//*[@id="detail_form"]/div[1]/ul/li[5]/span[3]/img').click()
-# time.sleep(2)
-# for _ in range(cnt_end):
-#     time.sleep(0.7)
-#     driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/div/a[1]').click()
-# driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/table/tbody/tr[5]/td[6]/a').click()
-# # 확인
-# driver.find_element(By.XPATH, '//*[@id="search_detail"]').click()
-# # 기사 전체보기
-# driver.find_element(By.XPATH, '//*[@id="tab1"]/button').click()
-#
-# # 추가 설정 - 정확도 순
-# driver.find_element(By.XPATH, '//*[@id="container"]/section/div/section/header/div[2]/div/button').click()
-# driver.find_element(By.XPATH, '//*[@id="dropdown"]/ul/li[2]/a').click()
-#
-#
-#
-# #총 뉴스 기사 수
-# req = driver.page_source
-# bs = BeautifulSoup(req, 'lxml')
-# string = ""
-# html = bs.findAll('span')
-# for i in range(1, len(html) - 1):
-#     if html[i - 1].get_text() == '뒤로가기' and html[i + 1].get_text() == '건':
-#         total_arti_cnt = int(re.sub(',', '', html[i].get_text()))
-#
-# total_page_click_cnt = math.ceil(total_arti_cnt / 24) # 총 클릭할 페이지 수
-#
-#
-#
-# # 더보기를 끝까지 눌러서 모든 기사 불러오기
-# for i in range(total_page_click_cnt):
-#     if int(total_page_click_cnt / 100) == i:
-#         time.sleep(random.randrange(5, 10))
-#     driver.find_element(By.XPATH, '//*[@id="container"]/section/div/section/div/a').click()
-#     driver.implicitly_wait(30)
-#     time.sleep(random.randrange(3, 6) / 10)
-#
-# # 테스트
-# # for i in range(2):
-# #     if int(total_page_click_cnt / 100) == i:
-# #         time.sleep(random.randrange(5, 10))
-# #     driver.find_element(By.XPATH, '//*[@id="container"]/section/div/section/div/a').click()
-# #     driver.implicitly_wait(30)
-# #     time.sleep(random.randrange(1, 5))
-#
-#
-#
-# # 기사 긁어오기
-# def article(url):
-#     response = requests.get(url)
-#     html = response.text
-#     soup = BeautifulSoup(html, 'html.parser')
-#     title = soup.find('h1').get_text()
-#     title = title.replace('\n', "")
-#     raw_raw_content = soup.find('div', {'id': 'article_body'})
-#     raw_content = raw_raw_content.findAll('p', {'class': ''})
-#     arti = ""
-#     for c in raw_content:
-#         arti += c.get_text()
-#         arti = re.sub("  ", "", arti)
-#         arti = arti.replace('\n', "")
-#     return title, arti
-#
-#
-#
-# # 각 url을 이용해 위 함수를 이용하여 기사들을 긁어오고 파일에 저장 - (무시 encoding='utf-8')
-# def write_article(arti):
-#     with open('저장할 경로', 'a', encoding='utf-8') as file: # 입력
-#         file.write(arti + "\n")
-#
-#
-#
-# # 동적으로 페이지를 불러온 뒤 url들을 가져온다 -> 더보기로 기사를 늘렸을 때 url을 가져올 수 있게 된다.
-# req = driver.page_source
-# soup = BeautifulSoup(req, 'lxml')
-# time.sleep(10)
-# url_html = str(soup.findAll('h2', 'headline')).split('">')
-# url_list_ = []
-# for e in url_html:
-#     if 'href=' in e:
-#         url_list_.append(e[10:])
-# url_list_ = url_list_[5:-5]
-#
-# arti_idx = 0
-# print(url_list_)
-#
-# # 동적 크롤링을 이용해서 긁어온 url들을 이용하여 정적으로 크롤링을 한다.
-# # 실행
-# while True:
-#     time.sleep(3)
-#     for url in url_list_:
-#         time.sleep(random.randrange(3, 15))
-#         title_, contents_ = article(url)
-#         total_arti = ""
-#         total_arti += "[" + str(arti_idx) + "]" + title_ + "   " + contents_
-#         print(total_arti) # 진행상황을 보기위한 코드
-#         write_article(total_arti)
-#         arti_idx += 1
-#     driver.quit()
-#     break
+def urls_in_page():
+    html = driver.page_source
+    bs = BeautifulSoup(html, 'lxml')
+    raw_urls = str(bs.find_all('p', {'class', 'tit'})).split('"')
+    urls = []
+    for e in raw_urls:
+        if 'https://www.donga.com' in e and 'pdf_viewer' not in e:
+            urls.append(e)
+    return urls
+
+
+
+def next_page(page):
+    mouse_dict = {11: (233, 640), 12: (264, 640), 13: (291, 640), 14: (320, 640), 15: (346, 640), 16: (374, 640)
+                  , 17: (404, 640), 18: (430, 640), 19: (459, 640), 10: (493, 640), 'next1': (533, 640)
+                  , 21: (225, 640), 22: (263, 640), 23: (300, 640), 24: (335, 640), 25: (370, 640), 26: (407, 640)
+                  , 27: (444, 640), 28: (479, 640), 29: (516, 640), 20: (551, 640), 'next2': (592, 640)
+                  , 31: (188, 640), 32: (238, 640), 33: (281, 640), 34: (322, 640), 35: (368, 640), 36: (409, 640)
+                  , 37: (454, 640), 38: (499, 640), 39: (541, 640), 30: (587, 640), 'next3': (633, 640)}
+    for _ in range(2):
+        time.sleep(2)
+        want = driver.find_element_by_xpath('//*[@id="content"]/div[3]/div[2]').location['y'] - 500
+        driver.execute_script("window.scrollTo(0," + str(want) + ");")
+    pyautogui.click(mouse_dict[page][0], mouse_dict[page][1])
+    time.sleep(2)
+    driver.implicitly_wait(30)
+
+
+
+def write_article(arti):
+    with open('C:/Users/user/Desktop/2020_1_donga.txt', 'a', encoding='utf-8') as file: # 입력
+        file.write(arti + "\n")
+
+
+idx = 0
+
+for i in range(1, total + 2):
+    if i == 10:
+        next_page(10)
+    elif i != 10 and str(i)[-1] != '1':
+        next = str(len(str(i))) + str(i)[-1]
+        next_page(int(next))
+
+    urls = urls_in_page()
+    for url in urls:
+        try:
+            write_article(article(url, idx))
+            print(article(url, idx))
+        except AttributeError:
+            continue
+        idx += 1
+        time.sleep(1.3)
+
+    if i % 10 == 0:
+        if i == 10:
+            next_page('next1')
+        else:
+            next_page('next' + str(len(str(i))))
