@@ -1,9 +1,9 @@
 #입력 필요 : 크롬 드라이버 설치 경로, 조선일보 ID, PassWord, 키워드, 기사를 저장할 공간의 경로
-# pip install bs4, pyautogui, selenium, lxml, requests
+# pip install bs4, lxml, selenium, pyautogui, requests, tqdm 
 
 import re
-
 import pyautogui
+import tqdm
 from selenium import webdriver
 import time
 from bs4 import BeautifulSoup
@@ -44,8 +44,8 @@ def login(): # 로그인
     time.sleep(5)
     pyautogui.click(472, 642)
     time.sleep(5)
-    pyautogui.click(487, 719)
-    time.sleep(5)
+#     pyautogui.click(487, 719)
+#     time.sleep(5)
 
 
 
@@ -63,6 +63,7 @@ def insta_urls(): # 페이지에 url 긁어오기
 
 def insta_contents(url): # 긁어온 url에서 내용 빼오기
     driver.get(url)
+    time.sleep(1.2)
     contents_html = driver.page_source
     contents_bs = BeautifulSoup(contents_html, 'lxml')
     contents = contents_bs.find('div', {'class', 'C4VMK'}).get_text()
@@ -84,10 +85,12 @@ rep = []
 while True:
     waiting()
     urls = insta_urls()
+    urls = tqdm.tqdm(urls)
     for e in urls:
         if e not in rep:
             rep.append(e)
-    if len(rep) == 300:
+    print(len(rep))
+    if len(rep) >= 300:
         break
 
 print(rep)
